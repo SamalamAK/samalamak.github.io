@@ -1,0 +1,1593 @@
+\documentclass[a4]{article}
+%\textwidth=4.5in
+\textwidth=14cm
+%\textheight=7.125in
+\textheight=22cm
+%\usepackage{pseudocode} %sak
+\usepackage{funpseudocode}
+\usepackage[pdfpagemode={UseOutlines},bookmarks=true,bookmarksopen=true,
+   pdfauthor={S. Arun-Kumar},pdfcreator={S. Arun-Kumar},
+   bookmarksopenlevel=0,bookmarksnumbered=true,hypertexnames=false,
+   colorlinks,linkcolor={blue},citecolor={red},urlcolor={magenta},
+   pdfstartview={FitV},unicode,breaklinks=true]{hyperref}
+   
+
+
+\hyphenation{pa-ram-e-ters sep-a-rated}
+%
+%
+%    September 2, 1999
+%
+%
+\title{FunPseudocode: A \LaTeX\  Style File for Displaying \underline{All} Algorithms}
+\author{
+D.L.\ Kreher\\
+Department of Mathematical Sciences\\
+Michigan Technological University \\ 
+Houghton, MI 49931\\
+{\tt kreher@mtu.edu}\\[1ex]
+and \\[1ex]
+D.R.\ Stinson\\
+Department of Combinatorics and Optimization\\
+University of Waterloo\\
+Waterloo ON, N2L 3G1\\
+{\tt dstinson@uwaterloo.ca}\\[1ex]
+and (last and least)\\[1ex]
+S. Arun-Kumar\\
+Department of Computer Science and Engineering\\
+Indian Institute of Technology Delhi\\
+Hauz Khas, New Delhi 110016, India.\\
+{\tt sak@cse.iitd.ac.in}
+}
+
+\newcommand{\keyword}[1]{\texttt{#1}}
+\begin{document}
+%\makeatletter
+%\setlength{\pcode@width}{2.75in}
+%\addtolength{\pcode@width}{-40pt}
+%\makeatother
+
+\maketitle
+\begin{abstract}
+  There are many styles of programming and correspondingly there 
+  ought to be just as many styles of specifying algorithms in pseudocode.
+  Due to various historical reasons there is a ``von Neumann 
+  stranglehold'' (deriving its power mainly from the ``von
+  Neumman bottlneck''\cite{backus}) which dominates the domain of pseudocode. 
+
+  While any number of styles and style files exist to format algorithms written
+  in \LaTeX\ in the imperative style, there are none for writing algorithms in
+  `functional pseudocode'. The last author has decided to make amends in this
+  document -- with minimal modification of the {\tt pseudocode.sty} file, mainly
+  because this was the simplest and easiest thing to do. Most of the other style
+  files looked more complicated and harder to understand and tweak. The new
+  style file is called \keyword{funpseudocode.sty} and its commands are used in
+  the environment \keyword{pseudocode}. 
+\end{abstract}
+
+\section{Introduction}
+
+This paper describes a \LaTeX\ environment named \keyword{pseudocode}
+that can be used for describing algorithms in pseudocode form.  This
+is the style used in the %our %recently published 
+textbook {\em Combinatorial Algorithms: Generation, Enumeration and Search}
+  \cite{cages} written by the first two authors.
+The style file \keyword{pseudocode.sty} is freely available on
+
+\url{http://www.math.mtu.edu/~kreher/cages.html}
+while the style file \keyword{funpseudocode.sty} is available from the last
+author on request.
+
+
+This package is quite easy to use, and allows imperative (i.e. state-based)
+algorithms to be described in a \LaTeX\ document using a natural Pascal-like
+syntax and functional algorithms (which are not state-based) in a simple
+mathematical notation that is more precise (and less ambiguous) than in most
+mathematics texts.  In the remaining sections of this note, we describe how to
+use the \keyword{pseudocode} environment and we present some examples.  Readers
+familiar with \LaTeX\ (see \cite{lamport}) should be able to easily customize
+the style file to include additional desired features.
+
+The \keyword{pseudocode} environment requires the \keyword{fancybox}
+package by Timothy Van Zandt.  This package is described in 
+Section 10.1.3 of \cite{LC}.
+Other environments for describing algorithms include
+\keyword{alg}, \keyword{algorithmic}, \keyword{newalg} and \keyword{program}.
+These style files, as well as \keyword{fancybox}, are all available from the CTAN web site
+\verb+http://www.ctan.org/+
+
+In this paper we describe our extension to the \texttt{pseudocode}
+package to include pseudocode written in the functional and the
+declarative styles as well.
+
+\paragraph{Imperative pseudocode} The package \texttt{pseudocode.sty}
+written by the first two authors aids the presentation of essentially
+imperative algorithms in pseudocode that could be easily expanded or
+refined into actual code written in a high-level block-structured
+language. We call this {\em imperative pseudocode}.
+
+There are other styles of programming which are not necessarily state-based and which require algorithms to be
+specified in pseudocode. Functional and declarative algorithms
+do not necessarily suffer from the complexities of sequencing
+low-level state updates. Indeed much of pure functional programming
+does not require the notion of state. More importantly, state-based
+algorithm specification may actually hinder the development of code in
+a functional or declarative programming language and make it harder to
+understand and code even fairly easy problems. We call this the ``von
+Neumann stranglehold''. It actually prevents undergraduate students
+trained to program in imperative languages from
+\begin{itemize}
+\item relating algorithm design and programming to their mathematical
+  education and
+\item prevents clarity of thought and precision in expression when it
+  comes to specifying recursion in data and programs. It has led to a
+  colleague commenting that the ``for-loop is the most basic instinct 
+  after sex''.
+\end{itemize}
+
+Functional specifications are often more succinct than state-based
+specification.  The same also holds for algorithms written in a
+declarative style. Logically speaking there is no reason why an
+algorithm cannot be specified as a set of rules in a first- or
+higher-order logical language.
+
+\paragraph{Functional pseudocode} As the name suggests, it is simply a
+way of specifying and writing algorithms as mathematical
+functions. While most recursive functions in any recursive function
+theory text are actually algorithms, one may ask why it is necessary to have a
+pseudocode meta-language to describe functional algorithms. There are many
+reasons for this.
+\begin{itemize}
+\item Algorithms written as mathematical functions using the usual devices
+  available for formatting mathematics, pay scant regard to information about
+  the scope of names and the life-times of variables and functions. Functions
+  may be deeply nested or localised in other functions and expressions and
+  normal mathematical formatting would ignore the nesting of definitions. We
+  will see examples of this as we go along.
+\item Mathematically expressed algorithms do not allow for the specification of
+  orders of evaluation which are often of interest in the case of
+  algorithms. For instance, the definition of a function by cases such as
+  $|x| = \left\{ 
+    \begin{array}{ll} 
+      x & \mbox{~if~} x \geq 0\\
+      -x & \mbox{~if~} x < 0
+    \end{array}
+    \right.$
+  does not take into account that the condition would be first evaluated. It
+  also does not take into account that the condition needs to be  evaluated only
+  once for both cases. A functional pseudo-code definition as given below
+ 
+  \begin{pseudocode}{abs}{x}
+  \BEGIN
+    \CASES
+    \IT{x \geq 0}{x}
+    \IT{\ELSE}{-x}
+    \ENDCASES
+  \END
+\end{pseudocode}
+
+allows these distinctions to be taken into account.
+\item Functional pseudo-code permits an almost direct translation of the
+  algorithm into a program (in a linearised form) in a modern functional
+  programming language.
+\end{itemize}
+
+Such issues are important because they greatly affect our proofs of correctness
+and our calculations of the efficiency of algorithms expressed as
+functions. Further mathematicians, logicians and programmers are in general
+sloppy about distinguishing between various forms of equality and
+equivalence\footnote{C, C++, Java and python programmers are even worse! For
+  instance, {\tt x = x+1} must easily rank as the most bizarre equation ever
+  encountered by an unsuspecting pure mathematician. It collapses the entire set
+  of naturals to a singleton!}.  In particular, it is important to distinguish
+between an equality by definition and an equality derived by other means.
+
+
+\paragraph{Declarative pseudocode} Arguments similar to those in favour of
+functional pseudocode may also be advanced in favour of expressing
+algorithms as merely logical rules. While in a functional algorithm
+there are clear and distinct notions of input to a function and its 
+output, the declarative style is more relational in its approach and
+therefore it should suffice to specify a collection of logical rules 
+which make up an algorithm. 
+
+\paragraph{Mixed pseudocode} There are however many algorithms that
+are expressed in a mixture of styles, just as no programming language
+is either purely functional, or purely declarative or purely
+imperative. It is our contention that for each problem or sub-problem,
+any or a mixture of styles of expressing algorithms may be used,
+depending upon taste, ``natural-ness'', conciseness, efficiency etc.
+
+\paragraph{Annotations} A final stylistic improvement (independent of the
+programming paradigm) is that in this environment we allow comments to specify
+preconditions, post-conditions, invariants, bound functions etc to simplify the
+understanding of the correctness of the algorithm described in the pseudo-code
+
+Since this package unifies the existing imperative style with the functional and
+declarative styles, it has been found necessary to explain all aspects including
+that of the imperative style. What better way to do this than to extend the
+original documentation written by the first two authors for this purpose? That
+is precisely what we do in this document.
+
+
+Without any further ado we plunge into the matter of the original document and
+intersperse it with our own material. We hope the reader gets a holistic
+perspective of algorithm specification and ``Houdini'' out of the von Neumann
+stranglehold.
+
+\section{The \keyword{pseudocode} Environment}
+
+Within the \keyword{pseudocode} environment, a number of commands for 
+popular algorithmic constructs are available.
+In general, the commands provided can be nested to
+describe quite complex algorithms. 
+
+The \keyword{funpseudocode} environment is  invoked
+as follows:
+\begin{verbatim}
+\begin{pseudocode}{<Name>}{<Parameters>}
+  pseudocode constructs
+\end{pseudocode}
+\end{verbatim}
+
+\noindent{}The argument \verb+<Name>+ is the name of the algorithm,
+and \verb+<Parameters>+ is a list of parameters for the algorithm.
+For example, the commands
+
+%\iffalse{ %sak
+\begin{verbatim}
+\begin{pseudocode}{CelsiusToFahrenheit}{c}
+  f \GETS {9c/5} + 32\\
+  \RETURN{f}
+\end{pseudocode}
+\end{verbatim}
+%}\fi %sak
+
+\noindent{}produces the following output when included in
+a \LaTeX\  document:
+
+\begin{pseudocode}{CelsiusToFahrenheit}{c}
+  f \GETS {9c/5} + 32\\
+  \RETURN{f}
+\end{pseudocode}
+
+%\iffalse{ %sak
+Notice that the command \verb+\GETS+ produces the Pascal assignment
+symbol, which we use to indicate an assignment of a
+variable\footnote{The first two authors in their original package used
+  a left arrow for assingment. The last author has changed it to the
+  Pascal-like assignment symbol since the left arrow is more useful
+  specifying Horn clauses in a declarative algorithm}. The user
+could use instead some other symbol, if desired.  For example,
+\verb+\GETS+ could be replaced by \verb+=+, as is done in the ``C''
+programming language.
+%}\fi %sak 
+
+The corresponding functional algorithm would read in  \LaTeX\ as
+follows.
+
+\begin{verbatim}
+\begin{pseudocode}{CelsiusToFahrenheit}{c}
+  {9c/5} + 32\\
+\end{pseudocode}
+\end{verbatim}
+
+\noindent{}and produce the following output.
+
+\begin{pseudocode}{CelsiusToFahrenheit}{c}
+%%  f \GETS {9c/5} + 32\\ %sak
+  {9c/5} + 32
+%%  \RETURN{f}
+\end{pseudocode}
+
+Here notice that we use ``$\DEF$'' to denote ``equality by
+definition''.  Every function definition will use this symbol to
+separate the name and formal parameters of the function from its
+body. We use the standard equality symbol ``$=$'' to denote the
+usual notion of equality used in (equational) identities.
+
+\subsection{ The {\em begin-end} Construct}
+
+To form compound statements from simple statements, the {\em begin-end} 
+construct is used as follows:
+\begin{verbatim}
+ \BEGIN
+    some statement\\
+    another statement\\
+    yet another statement
+ \END 
+\end{verbatim}
+This generates the following:
+
+\medskip
+\begin{pseudocode}[display]{}{}
+\BEGIN
+\mbox{some statement}\\
+\mbox{another statement}\\
+\mbox{yet another statement}
+\END
+\end{pseudocode}
+\\[2ex]
+\noindent{}The effect of this construct is to group 
+a collection of statements
+using a left brace bracket of the appropriate size.
+
+In the sections that follow we will use the notation
+\verb+<stmt>+
+to indicate  a simple statement or a compound statement.
+Note that the contents of statements are typeset in math mode.
+Therefore, non-math mode text must be enclosed in an
+\verb+\mbox{}+.
+
+Observe that the double backslash \verb+\\+ plays the same
+role as the semicolon in Pascal, i.e., it is used to
+separate statements, and should never appear before
+\verb+\END+.
+
+%\iffalse{ %sak
+\subsection{The {\em if-then-else} Construct}
+
+The {\em if-then-else} construct takes various forms,
+such as the following:
+\begin{verbatim}
+\IF <condition> \THEN <stmt> 
+\IF <condition> \THEN <stmt> \ELSE <stmt> 
+\IF <condition> \THEN <stmt> \ELSEIF <stmt> \THEN <stmt> 
+\end{verbatim}
+Note that there is no limit placed on the number
+of \verb+\ELSEIF+s that may be used in an {\em if-then-else} construct.
+For example,  the commands:
+\begin{verbatim}
+\IF some condition is true
+\THEN
+ \BEGIN
+    some statement\\
+    another statement\\
+    yet another statement
+ \END
+\ELSEIF some other condition is true
+\THEN
+ \BEGIN
+    some statement\\
+    another statement\\
+    yet another statement
+ \END
+\ELSEIF some even more bizarre condition is met
+\THEN 
+  do something else
+\ELSE
+  do the default actions
+\end{verbatim}
+
+\noindent{}would produce the following output:
+
+\medskip
+\begin{pseudocode}[display]{}{}
+\IF \mbox{some condition is true}
+\THEN 
+\BEGIN
+\mbox{some statement}\\
+\mbox{another statement}\\
+\mbox{yet another statement}
+\END
+\ELSEIF \mbox{some other condition is true}
+\THEN 
+\BEGIN
+\mbox{some statement}\\
+\mbox{another statement}\\
+\mbox{yet another statement}
+\END
+\ELSEIF\mbox{some even more bizarre condition is met}
+\THEN \mbox{do something else}
+\ELSE
+\mbox{do the default actions}
+\end{pseudocode}
+
+\subsection{The {\em for} Loop}
+
+The {\em for} loop takes the following forms:
+\begin{verbatim}
+\FOR <var> \GETS <lower>  \TO <upper> \DO <stmt> 
+\FOR <var> \GETS <upper>  \DOWNTO <lower> \DO <stmt> 
+\FOREACH <condition> \DO  <stmt> 
+\end{verbatim}
+For example,
+\begin{verbatim}
+\FOR i \GETS 0 \TO 10 \DO
+  some processing
+\end{verbatim}
+produces
+
+\medskip
+\begin{pseudocode}[display]{}{}
+\FOR i \GETS 0 \TO 10 \DO
+\mbox{some processing}
+\end{pseudocode}
+
+\noindent{}and
+
+\begin{verbatim}
+\FOREACH x \in \mathcal{S}  \DO
+  some processing 
+\end{verbatim}
+
+\noindent{produces}
+
+\medskip
+\begin{pseudocode}[display]{}{}
+\FOREACH x \in \mathcal{S}  \DO
+  \mbox{some processing}
+\end{pseudocode}
+
+\subsection{The {\em while} Loop}
+
+The {\em while} loop takes the following form:
+
+\begin{verbatim}
+\WHILE <condition> \DO <stmt> 
+\end{verbatim}
+
+\noindent{}For example,
+
+\begin{verbatim}
+\WHILE some condition holds \DO 
+  some processing 
+\end{verbatim}
+
+\noindent{}produces
+
+\medskip
+\begin{pseudocode}[display]{}{}
+\WHILE \mbox{some condition holds} \DO 
+\mbox{some processing }
+\end{pseudocode}
+
+\subsection{The {\em repeat-until} Loop}
+
+The {\em repeat-until} loop takes the following form:
+
+\begin{verbatim}
+\REPEAT <stmt> \UNTIL <condition> 
+\end{verbatim}
+
+\noindent{}For example,
+
+\begin{verbatim}
+\REPEAT
+  some processing 
+\UNTIL some condition is met 
+\end{verbatim}
+
+\noindent{}produces
+
+\medskip
+\begin{pseudocode}[display]{}{}
+\REPEAT
+\mbox{some processing}
+\UNTIL \mbox{some condition is met}
+\end{pseudocode}
+
+\subsection{Main Programs and Procedures}
+
+We can describe a main program that calls one (or more) procedures as follows:
+
+\begin{verbatim}
+\begin{pseudocode}{<Name>}{<Parameters>}
+\PROCEDURE{<ProcedureName>}{<ProcedureParameters>}
+   some stuff
+\ENDPROCEDURE
+\MAIN
+  some stuff\\
+  \CALL{<ProcedureName>}{<ActualParameters}>\\
+  more stuff
+\ENDMAIN
+\end{pseudocode}
+\end{verbatim}
+
+Here is a simple example to illustrate the 
+use of a main program calling a procedure.
+The commands
+
+\begin{verbatim}
+\begin{pseudocode}{TemperatureTable}{lower, upper}
+\PROCEDURE{CelsiusToFahrenheit}{c}
+  f \GETS {9c/5} + 32\\
+  \RETURN{f}
+\ENDPROCEDURE 
+\MAIN
+x \GETS lower \\
+\WHILE x \leq upper \DO
+\BEGIN
+ \OUTPUT{x, \CALL{CelsiusToFahrenheit}{x}}\\
+ x \GETS x+1
+\END
+\ENDMAIN
+\end{pseudocode}
+\end{verbatim}
+
+\noindent{}produce the following output:
+
+\begin{pseudocode}{TemperatureTable}{lower, upper}
+\PROCEDURE{CelsiusToFahrenheit}{c}
+  f \GETS {9c/5} + 32\\
+  \RETURN{f}
+\ENDPROCEDURE 
+
+\MAIN
+x \GETS lower \\
+\WHILE x \leq upper \DO
+\BEGIN
+ \OUTPUT{x, \CALL{CelsiusToFahrenheit}{x}}\\
+ x \GETS x+1
+\END
+\ENDMAIN
+\end{pseudocode}
+%}\fi %sak
+
+\subsection{Comments}
+
+A comment statement may be inserted in an algorithm using the
+following command:
+\begin{verbatim}
+\COMMENT{<commenttype>}{<stmt>}
+\end{verbatim}
+For example, the commands
+\begin{verbatim}
+expression1 
+\COMMENT{comment}{Now evaluate expression1}\\
+expression2 
+\COMMENT{comment}{evaluate expression2}\\
+\end{verbatim}
+
+\noindent{}produce the output
+
+\medskip
+\begin{pseudocode}[display]{}{}
+expression1  
+\COMMENT{comment}{Now evaluate expression1}\\
+expression2  
+\COMMENT{comment}{evaluate expression2}\\
+\end{pseudocode}
+
+\medskip
+
+Note that comments are assumed to be text. Thus, in order to include
+mathematical expressions in a comment, math mode must be used explicitly. Further, note that there are {\em two} parameters in a comment. This gives the designer freedom to classify comment types of various kinds. One common use is to allow the specification of preconditions, post-conditions, loop invariants and bound functions before loops and for tail-recursive functions. The following imperative algorithm illustrates these uses.
+
+\begin{pseudocode}{Factorial}{n}
+  \BEGIN
+     \COMMENT{requires}{integer $n > 0$}\\
+     \LOCAL{p \GETS 1}\\
+     \FOR i  \GETS 1 \TO n \DO\\
+     \BEGIN 
+        p \GETS p*i\\
+        \COMMENT{inv}{$0 < i \leq n \wedge p = i!$}\\
+        \COMMENT{bf}{$n-i$}\\ 
+     \END\\
+     \COMMENT{ensures}{$p = n!$}\\
+     \RETURN{p}
+  \END
+\end{pseudocode}
+
+
+
+
+\subsection{A Declarative Example}
+Consider the following logic program (as opposed to Prolog) lifted
+straight from Llyod's book \cite{lloyd}. A logic program is simply an
+unordered collection of Horn clauses. However the sequence below shows
+a top-down development of the logic program.
+
+\begin{pseudocode}{sort}{x,y}
+  \CASES
+  \HORN{sort(x,y)}{perm(x,y),sorted(x,y)}
+  \HORN{sorted(nil)}{}
+  \HORN{sorted(x.nil)}{}
+  \HORN{sorted(x.y.z)}{lesseq(x,y),sorted(y,z)}
+  \HORN{lesseq(x,x)}{}
+  \HORN{lesseq(x,y)}{x < y}
+  \HORN{perm(nil, nil)}{}
+  \HORN{perm(x.y, u.v)}{delete(u, x.y, z), perm(z, v)}
+  \HORN{delete(x, x.y, y)}{}
+  \HORN{delete(x, y.z, y.w)}{delete(x, z, w)}
+  \ENDCASES
+\end{pseudocode}
+
+\noindent{}generated from the following \LaTeX\ source 
+
+\begin{verbatim}
+\begin{pseudocode}{sort}{x,y}
+  \HORN{sort(x,y)}{perm(x,y),sorted(x,y)}
+  \HORN{sorted(nil)}{}
+  \HORN{sorted(x.nil)}{}
+  \HORN{sorted(x.y.z)}{lesseq(x,y),sorted(y,z)}
+  \HORN{lesseq(x,x)}{}
+  \HORN{lesseq(x,y)}{x < y}
+  \HORN{perm(nil, nil)}{}
+  \HORN{perm(x.y, u.v)}{delete(u, x.y, z), perm(z, v)}
+  \HORN{delete(x, x.y, y)}{}
+  \HORN{delete(x, y.z, y.w)}{delete(x, z, w)}
+\end{pseudocode}
+\end{verbatim}
+
+\subsection{Some Functional Examples}
+
+The following functional pseudo-code specifies the function for computing the
+greatest non-negative integer no greater than the positive square root of an
+integer. First, we give the specification in as a pure mathematical definition
+(by cases if necessary) and then as functional pseudocode.  
+
+\[
+\lfloor \sqrt {n} \rfloor = 
+\left\{
+  \begin{array}{ll}
+    undefined &\mbox{\ if\ } n < 0 \\
+    k & \mbox{\ if\ } n \geq 0
+  \end{array}
+\right.
+\]
+where $0\leq k^2 \leq n < (k+1)^2$.
+
+Since functions could be partial, we use ``$\bot$'' to stand for the undefined.
+In any definition by
+cases, it makes more sense to provide the condition to be satisfied before the
+value, since it general the condition will be evaluated first. Further, the
+``where'' clause is incorporated as part of the algorithm in the pseudocode.
+
+\begin{pseudocode}{isqrt0}{n}
+  \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n \geq 0}{k}
+    \ENDCASES\\
+  \WHERE 0 \leq k^2 \leq n < (k+1)^2      
+  \END
+\end{pseudocode}
+
+\noindent{}whose  \LaTeX\ source is as follows.
+
+\begin{verbatim}
+\begin{pseudocode}{isqrt0}{n}
+  \BEGIN
+    \CASES
+    \IT{\bot}{n < 0}
+    \IT{k}{n \geq 0}
+    \ENDCASES\\
+  \WHERE 0 \leq k^2 \leq n < (k+1)^2      
+  \END
+\end{pseudocode}  
+\end{verbatim}
+
+In any definition by cases when the last case is implicitly a negation of the
+cases preceding it, it may be more appropriate to use the keyword {\bf else}.
+
+
+\begin{pseudocode}{isqrt0}{n}
+  \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{\ELSE}{k}
+    \ENDCASES\\
+  \WHERE 0 \leq k^2 \leq n < (k+1)^2      
+  \END
+\end{pseudocode}
+
+
+Since most algorithms in a functional language would use several
+conditional clauses which are reminiscent of Horn clauses in a logic
+program, we have defined the keyword ``{\tt \textbackslash IT}''
+(standing for ``if'' $\ldots$ ``then'' $\ldots$)
+with two parameters separated by a ``$\rightarrow$''. The keywords
+``{\tt \textbackslash CASES}'' and ``{\tt \textbackslash ENDCASES}''
+enclose the various cases in a definition and align the
+``$\rightarrow$'' symbols appropriately.
+
+The following is an implementation obtained using top-down
+refinement.  Notice the nesting of functions. Also notice that
+\REC is a keyword in functional algorithms. \REC  indicates the presence of recursion in a function.
+
+\begin{pseudocode}{isqrt1}{n}
+  \BEGIN
+    \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n = 0}{0}
+    \IT{\ELSE}{\CALL{shrink}{n,0,n}}
+    \ENDCASES
+    \END\\
+    \WHERE\\
+    \REC \FUN {shrink} {n, l, u}\\
+    \BEGIN
+      \CASES
+      \IT{l=u}{l}
+      \IT{l<u \wedge (l+1)^{2} \leq n}{\CALL{shrink}{n, l+1, u}}
+      \IT{l<u \wedge (l+1)^{2} > n}{l}
+      \IT{l < u \wedge u^2 > n}{\CALL{shrink}{n, l, u-1}}
+      \IT{l < u \wedge (u-1)^2 > n}{u-1}
+      \IT{\ELSE}{\bot}\\
+      \ENDCASES
+     \END
+     \ENDFUN
+  \END\\
+\end{pseudocode}
+
+The above code was produced by the following \LaTeX\ code.
+
+\begin{verbatim}
+\begin{pseudocode}{isqrt1}{n}
+  \BEGIN
+    \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n = 0}{0}
+    \IT{\ELSE}{\CALL{shrink}{n,0,n}}
+    \ENDCASES
+    \END\\
+    \WHERE\\
+    \REC \FUN {shrink} {n, l, u}\\
+    \BEGIN
+      \CASES
+      \IT{l=u}{l}
+      \IT{l<u \wedge (l+1)^{2} \leq n}{\CALL{shrink}{n, l+1, u}}
+      \IT{l<u \wedge (l+1)^{2} > n}{l}
+      \IT{l < u \wedge u^2 > n}{\CALL{shrink}{n, l, u-1}}
+      \IT{l < u \wedge (u-1)^2 > n}{u-1}
+      \IT{\ELSE}{\bot}\\
+      \ENDCASES
+     \END
+     \ENDFUN
+  \END\\
+ \end{pseudocode}  
+\end{verbatim}
+
+We could equivalently have written this functional algorithm using a
+\LET as follows.
+
+\begin{pseudocode}{isqrt1}{n}
+  \LET 
+  \REC \FUN
+  {shrink} {n, l, u}
+   \BEGIN
+     \CASES
+      \IT{l=u}{l}
+      \IT{l < u \wedge (l+1)^{2} \leq n}{\CALL{shrink}{n, l+1, u}}
+      \IT{l < u \wedge (l+1)^{2} > n}{l}
+      \IT{l < u \wedge u^2 > n}{\CALL{shrink}{n, l, u-1}}
+      \IT{l < u \wedge (u-1)^2 > n}{u-1}
+      \IT{\ELSE}{\bot}
+      \ENDCASES
+    \END\\
+  \ENDFUN
+   \IN
+  \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n = 0}{0}
+    \IT{\ELSE}{\CALL{shrink}{n,0,n}}
+    \ENDCASES
+  \END
+ \end{pseudocode}
+
+\noindent{}which has been produced by the following \LaTeX\ code.
+
+\begin{verbatim}
+\begin{pseudocode}{isqrt1}{n}
+  \LET 
+  \REC \FUN
+  {shrink} {n, l, u}
+   \BEGIN
+     \CASES
+      \IT{l=u}{l}
+      \IT{l < u \wedge (l+1)^{2} \leq n}{\CALL{shrink}{n, l+1, u}}
+      \IT{l < u \wedge (l+1)^{2} > n}{l}
+      \IT{l < u \wedge u^2 > n}{\CALL{shrink}{n, l, u-1}}
+      \IT{l < u \wedge (u-1)^2 > n}{u-1}
+      \IT{\ELSE}{\bot}
+      \ENDCASES
+    \END\\
+  \ENDFUN
+   \IN
+  \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n = 0}{0}
+    \IT{\ELSE}{\CALL{shrink}{n,0,n}}
+    \ENDCASES
+  \END
+ \end{pseudocode}  
+\end{verbatim}
+
+Rather than evaluate the condition $l < u$ repeatedly we could use
+nested constructs such as the following.
+
+\begin{pseudocode}{isqrt1}{n}
+  \LET 
+  \REC \FUN
+  {shrink} {n, l, u}
+   \BEGIN
+     \CASES
+      \IT{l=u}{l}
+      \IT{l < u}{\BEGIN
+                  \CASES
+                  \IT{(l+1)^{2} \leq n}{\CALL{shrink}{n, l+1, u}}
+                  \IT{(l+1)^{2} > n}{l}
+                  \IT{u^2 > n}{\CALL{shrink}{n, l, u-1}}
+                  \IT{(u-1)^2 > n}{u-1}
+                 \ENDCASES
+                 \END}
+      \IT{\ELSE}{\bot}
+      \ENDCASES
+    \END\\
+  \ENDFUN
+   \IN
+  \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n = 0}{0}
+    \IT{\ELSE}{\CALL{shrink}{n,0,n}}
+    \ENDCASES
+  \END
+ \end{pseudocode}  
+
+The above pseudocode was produced by the following \LaTeX\ code.
+
+\begin{verbatim}
+\begin{pseudocode}{isqrt1}{n}
+  \LET 
+  \REC \FUN
+  {shrink} {n, l, u}
+   \BEGIN
+     \CASES
+      \IT{l=u}{l}
+      \IT{l < u}{\BEGIN
+                  \CASES
+                  \IT{(l+1)^{2} \leq n}{\CALL{shrink}{n, l+1, u}}
+                  \IT{(l+1)^{2} > n}{l}
+                  \IT{u^2 > n}{\CALL{shrink}{n, l, u-1}}
+                  \IT{(u-1)^2 > n}{u-1}
+                 \ENDCASES
+                 \END}
+      \IT{\ELSE}{\bot}
+      \ENDCASES
+    \END\\
+  \ENDFUN
+   \IN
+  \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n = 0}{0}
+    \IT{\ELSE}{\CALL{shrink}{n,0,n}}
+    \ENDCASES
+  \END
+ \end{pseudocode}  
+\end{verbatim}
+
+We could also pepper the code with preconditions, postconditions, invariants and
+bound functions. In the above algorithm {\sc shrink} is a tail-recursive
+function, that shrinks the interval (containing the integer-square-root) rather
+slowly. A faster algorithm would be the function {\sc shrink2} shown in the
+following pseudo-code. Since this is also less obvious algorithm, whose
+correctness may be in doubt, it pays to include preconditions, post-constions and
+invariants and give an annotated piece of pseudocode.
+
+\begin{pseudocode}{isqrt2}{n}
+  \COMMENT{precondition}{integer $n > 1$}\\
+  \BEGIN
+  \LET 
+  \REC \FUN
+  {shrink2} {n, l, u}
+   \COMMENT{requires}{integers $n > 0 \wedge 0\leq l <  u\leq n$}\\
+   \COMMENT{inv}{$0\leq l^2\leq n < u^2$}\\
+   \COMMENT{bf}{$u-l-1$}\\
+   \BEGIN
+     \CASES
+     \IT{u=l+1}{l}
+     \IT{\ELSE}{\BEGIN
+                   \CASES
+                    \IT{m^2 > n}{\CALL{shrink2}{n, l, m}}
+                    \IT{\ELSE}{\CALL{shrink2} {n, m, u}}
+                    \ENDCASES
+                   \END}
+                 \WHERE m = (l+u)/2
+      \ENDCASES
+    \END\\
+    \COMMENT{ensures}{$0\leq l^2\leq n<(l+1)^2$}
+  \ENDFUN
+   \IN
+  \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n \leq 1}{n}
+    \IT{\ELSE}{\CALL{shrink2}{n,0,n}}
+    \ENDCASES
+  \END
+  \END
+ \end{pseudocode}  
+
+The above was produced by the following \LaTeX\ code.
+
+\begin{verbatim}
+\begin{pseudocode}{isqrt2}{n}
+  \COMMENT{precondition}{integer $n > 1$}\\
+  \BEGIN
+  \LET 
+  \REC \FUN
+  {shrink2} {n, l, u}
+   \COMMENT{requires}{integers $n > 0 \wedge 0\leq l <  u\leq n$}\\
+   \COMMENT{inv}{$0\leq l^2\leq n < u^2$}\\
+   \COMMENT{bf}{$u-l-1$}\\
+   \BEGIN
+     \CASES
+     \IT{u=l+1}{l}
+     \IT{\ELSE}{\BEGIN
+                   \CASES
+                    \IT{m^2 > n}{\CALL{shrink2}{n, l, m}}
+                    \IT{\ELSE}{\CALL{shrink2} {n, m, u}}
+                    \ENDCASES
+                   \END}
+                 \WHERE m = (l+u)/2
+      \ENDCASES
+    \END\\
+    \COMMENT{ensures}{$0\leq l^2\leq n<(l+1)^2$}
+  \ENDFUN
+   \IN
+  \BEGIN
+    \CASES
+    \IT{n < 0}{\bot}
+    \IT{n \leq 1}{n}
+    \IT{\ELSE}{\CALL{shrink2}{n,0,n}}
+    \ENDCASES
+  \END
+  \END
+ \end{pseudocode}  
+\end{verbatim}
+
+\subsection{Mixing Functional \& Imperative Styles}
+
+Sometimes it is imperative in the interest of efficiency, to use
+imperative constructs esp. when memoisation is required so that
+computations are not duplicated.  Here is a simple  algorithm
+for recursively computing fibonacci numbers by computing each
+fibonacci number only once. Here again we have borrowed from SML
+syntax.
+\begin{itemize}
+\item $\#1$ stands for the first component of a tuple 
+\item $::$ is the {\em cons} operation on lists
+\item $hd (L)$ is the first element of a non-null list
+\item $tl(L)$ is the list obtained by deleting the first element
+\end{itemize}
+
+\begin{pseudocode}{fibonacci}{n}
+  \BEGIN
+    \GLOBAL knownFibs = [(1,1), (0,0)]\\
+    \LET
+    KF \GETS knownFibs\\
+    \REC \FUN
+       {isknown} {n, KF}
+       \BEGIN
+          \CASES
+          \IT{KF = []}{\bot}
+          \IT{hd(KF) = (n, fn)}{fn}
+          \IT{\#1 (hd(KF))\neq n}{\CALL{isknown}{n, tl(KF)}}
+          \ENDCASES
+       \END
+    \ENDFUN
+    \REC \FUN
+         {fib} {n}
+         \BEGIN
+           \CASES
+           \IT {\CALL{isknown}{n, knownFibs} = (n, fn)}{fn}
+           \IT {\CALL{isknown}{n, knownfibs} = \bot}
+               {\BEGIN
+                fn \GETS \CALL{fib}{n-1} + \CALL{fib}{n-2}; \\ 
+                knownFibs := (n,fn)::knownFibs; \\
+                fn
+                \END}
+           \ENDCASES
+         \END
+         \ENDFUN
+   \IN\\
+   \CALL{fib}{n}
+  \END
+\end{pseudocode}
+
+Notice that the last clause of the definition of $\textsc{fib}$
+consists of 3 lines of which the first two lines are imperative
+statements which update state and the last line is the value of the
+function. The above algorithm was generated by the following
+\LaTeX\ code.
+
+\begin{verbatim}
+\begin{pseudocode}{fibonacci}{n}
+    \GLOBAL knownFibs = [(0,0), (1,1)]\\
+
+    \LET
+    KF \GETS knownFibs\\
+    \REC \FUN
+       {isknown} {n, KF}
+       \BEGIN
+          \CASES
+          \IT{KF = []}{\bot}
+          \IT{hd(KF) = (n, fn)}{fn}
+          \IT{\#1 (hd(KF))\neq n}{\CALL{isknown}{n, tl(KF)}}
+          \ENDCASES
+       \END
+    \ENDFUN
+    \REC \FUN
+         {fib} {n}
+         \BEGIN
+           \CASES
+           \IT {\CALL{isknown}{n, knownFibs} = (n, fn)}{fn}
+           \IT {\CALL{isknown}{n, knownfibs} = \bot}
+               {\BEGIN
+                fn \GETS \CALL{fib}{n-1} + \CALL{fib}{n-2}; \\ 
+                knownFibs := (n,fn)::knownFibs; \\
+                fn
+                \END}
+           \ENDCASES
+         \END
+         \ENDFUN
+   \IN\\
+   \CALL{fib}{n}
+  \END
+\end{pseudocode}
+  
+\end{verbatim}
+
+\subsection{Other Predefined Keywords}
+
+Several other predefined keywords are available.
+We summarize their usage in Table \ref{otherPredefinedKeywords}.
+
+\begin{table}[h]
+\caption{Other Predefined Keywords}
+\label{otherPredefinedKeywords}
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\hline
+command & output\\
+\hline
+\verb+\LOCAL{list of variables}+&
+$\LOCAL{\mbox{list of variables}}$\\
+\verb+\GLOBAL{list of variables}+&
+$\GLOBAL{\mbox{list of variables}}$\\
+\verb+\EXTERNAL{list of procedures}+&
+$\EXTERNAL{\mbox{list of procedures}}$\\
+\verb+\RETURN{list of values}+&
+$\RETURN{\mbox{list of values}}$\\
+\verb+\OUTPUT{list of values}+&
+$\OUTPUT{\mbox{list of values}}$\\
+\verb+\EXIT+&
+$\EXIT$\\
+\verb+\AND+&
+$\AND$\\
+\verb+\OR+&
+$\OR$\\
+\verb+\NOT+&
+$\NOT$\\
+\verb+\TRUE+&
+$\TRUE$\\
+\verb+\FALSE+&
+$\FALSE$\\
+\verb+\GETS+&
+$\GETS$\\
+\hline
+\end{tabular}
+\end{center}
+\end{table}
+
+Also note 
+that all of the keywords 
+\verb+\IF+, \verb+\WHILE+, \verb+\CALL{}{}+, \verb+\NOT+, etc.\
+are available for
+use outside of the \keyword{pseudocode} environment, but they must
+be input in math mode. For example,
+\begin{center}
+\verb+The  $\WHILE$ loop is our friend.+
+\end{center}
+generates
+\begin{center}
+The  $\WHILE$ loop is our friend.
+\end{center}
+
+
+\subsection{Statement Numbering}
+
+Statements can be numbered and given a reference key so that
+they can be referenced in a \LaTeX\ document using a \verb+\ref{}+ command
+(see section 4.2 of \cite{lamport}).
+This is done as follows:
+
+\begin{verbatim}
+\STMTNUM{<space>}{<key>}
+\end{verbatim}
+
+\noindent{}The argument \verb+<space>+ is the amount of space to be left between
+the text and the statement number.  This is a length that is specified by the
+user, and generally will require some experimentation in order for it to look nice.
+The argument \verb+<key>+ is the reference key
+used in the LaTeX\  \verb+\ref{}+ command to refer to the given
+statement.
+
+The default numbering for statements is arabic. However, it can be changed
+by a suitable \verb+\renewcommand{}+.
+An example is provided in the next section.
+
+\section{An example}
+
+The following example demonstrates the use of the
+\keyword{pseudocode} environment to describe a complete
+algorithm, the familiar ``mergesort'' algorithm, first in the
+functional style as a higher order function on lists of elements,
+where $R$ is a comparison relation on the elements of the list.
+We have borrowed the list notation from ML-like languages.
+
+The \LaTeX\ input
+
+\begin{verbatim}
+\begin{pseudocode}{mergeSort}{R, L}
+\label{mergeSort}
+\BEGIN
+  \COMMENT{comment}{Sort a list $L$ by the ordering relation $R$}\\
+  \LET 
+   \REC \FUN
+   {split} {L}
+   \BEGIN
+     \CASES
+     \IT {L = []} {([], [])} 
+     \IT {L = [h]} {([h], [])} 
+     \IT {L = h_1::h_2::M} {(h_1::left, h_2::right)} 
+     \ENDCASES\\
+     \WHERE\\
+     (left, right) = \CALL {split} {M}
+   \END
+   \ENDFUN\\
+  \REC \FUN 
+  {merge} {R, L, M}
+    \BEGIN
+      \CASES
+      \IT {L = [] = M} {[]} 
+      \IT {L = [] \neq M} {M}  
+      \IT {L \neq [] = M} {L}  
+      \IT {L \neq [] \neq M}{\BEGIN
+                             \CASES
+                             \IT {R(hd(L), hd(M))}
+                                 {hd(L)::\CALL{merge}{tl(L), M}} 
+                             \IT {\ELSE} {hd(M)::\CALL{merge}{L, tl(M)}}
+                             \ENDCASES
+                             \END} 
+      \ENDCASES
+    \END
+    \ENDFUN\\
+\IN 
+  \BEGIN
+    \CASES
+    \IT {L = []} {[]} 
+    \IT {L = [h]} {[h]} 
+    \IT {|L|>1} {\CALL{merge} {R, sortedLeft, sortedRight}}
+    \ENDCASES
+  \END\\
+  \WHERE\\
+  (leftHalf, rightHalf) = \CALL {split} {L} \STMTNUM{1cm}{st.0}\\
+  sortedLeft = \CALL {mergeSort} {R, leftHalf}\\
+  sortedRight = \CALL {mergeSort} {R, rightHalf}\\
+\END
+\end{pseudocode}
+\end{verbatim}
+
+\noindent{}produces the following output
+
+\begin{pseudocode}{mergeSort}{R, L}
+\label{mergeSort}
+\BEGIN
+  \COMMENT{comment}{Sort a list $L$ by the ordering relation $R$}\\
+  \LET 
+   \REC \FUN
+   {split} {L}
+   \BEGIN
+     \CASES
+     \IT {L = []} {([], [])} 
+     \IT {L = [h]} {([h], [])} 
+     \IT {L = h_1::h_2::M} {(h_1::left, h_2::right)} 
+     \ENDCASES\\
+     \WHERE\\
+     (left, right) = \CALL {split} {M}
+   \END
+   \ENDFUN\\
+  \REC \FUN 
+  {merge} {R, L, M}
+    \BEGIN
+      \CASES
+      \IT {L = [] = M} {[]} 
+      \IT {L = [] \neq M} {M}  
+      \IT {L \neq [] = M} {L}  
+      \IT {L \neq [] \neq M}{\BEGIN
+                             \CASES
+                             \IT {R(hd(L), hd(M))}
+                                 {hd(L)::\CALL{merge}{tl(L), M}} 
+                             \IT {\ELSE} {hd(M)::\CALL{merge}{L, tl(M)}}
+                             \ENDCASES
+                             \END} 
+      \ENDCASES
+    \END
+    \ENDFUN\\
+\IN 
+  \BEGIN
+    \CASES
+    \IT {L = []} {[]} 
+    \IT {L = [h]} {[h]} 
+    \IT {|L|>1} {\CALL{merge} {R, sortedLeft, sortedRight}}
+    \ENDCASES
+  \END\\
+  \WHERE\\
+  (leftHalf, rightHalf) = \CALL {split} {L} \STMTNUM{1cm}{st.0}\\
+  sortedLeft = \CALL {mergeSort} {R, leftHalf}\\
+  sortedRight = \CALL {mergeSort} {R, rightHalf}\\
+\END
+\end{pseudocode}
+
+
+In particular notice the use of the equality symbol in (\ref{st.0})
+and the statements following it, as distinct from the $\DEF$ used in the
+definition of the functions. Further also note the multiple occurrences of the variable name $L$ in the different scopes. The scopes are clarified by the use of braces in nested forms. 
+
+\noindent{}The following \LaTeX\ source describes the mergesort
+algorithm in the imperative style on arrays of integers
+under the usual $<$ ordering. The \LaTeX\ input
+
+\begin{verbatim}
+\renewcommand{\thepseudonum}{\roman{pseudonum}}
+\begin{pseudocode}{MergeSort}{n,X}
+\label{MergeSort}
+\COMMENT{comment}{Sort the array $X$ of length $n$}\\
+\IF n=2 \THEN
+\BEGIN
+  \IF X[0]>X[1] \THEN
+  \BEGIN
+    T \GETS X[0]\\
+    X[0]\GETS X[1]\\
+    X[1]\GETS T
+  \END
+\END
+\ELSEIF n>2 \THEN
+\BEGIN
+  m\GETS \lfloor n/2 \rfloor\\
+  \FOR i\GETS 0 \TO m-1 \DO A[i] \GETS X[i]\\
+  \FOR i\GETS m \TO n-1 \DO B[i] \GETS X[i]\\
+  \COMMENT{comment}{Now sort the subarrays $A$ and $B$}\\
+  \CALL{MergeSort}{m,A}\\
+  \CALL{MergeSort}{n-m,B}\\
+  i\GETS 0\\
+  j\GETS 0\\
+  \FOR k \GETS 0 \TO n-1 \DO
+  \BEGIN
+    \IF A[i] \leq B[j] \THEN
+    \BEGIN
+       X[k]\GETS A[i] \STMTNUM{1in}{st.1}\\
+       i\GETS i+1
+    \END
+    \ELSE
+    \BEGIN
+       X[k]\GETS B[j] \STMTNUM{1.03in}{st.2}\\
+       j\GETS j+1
+    \END
+  \END
+\END
+\end{pseudocode}
+\end{verbatim}
+
+\noindent{}produces the following output:
+
+\renewcommand{\thepseudonum}{\roman{pseudonum}}
+\begin{pseudocode}{MergeSort}{n,X}
+\label{MergeSort}
+\COMMENT{comment}{Sort the array $X$ of length $n$}\\
+\IF n=2 \THEN
+\BEGIN
+  \IF X[0]>X[1] \THEN
+  \BEGIN
+    T \GETS X[0]\\
+    X[0]\GETS X[1]\\
+    X[1]\GETS T
+  \END
+\END
+\ELSEIF n>2 \THEN
+\BEGIN
+  m\GETS \lfloor n/2 \rfloor\\
+  \FOR i\GETS 0   \TO m-1 \DO A[i] \GETS X[i]\\
+  \FOR i\GETS m \TO n-1 \DO B[i] \GETS X[i]\\
+  \COMMENT{comment}{Now sort the subarrays $A$ and $B$}\\
+  \CALL{MergeSort}{m,A}\\
+  \CALL{MergeSort}{n-m,B}\\
+  i\GETS 0\\
+  j\GETS 0\\
+  \FOR k \GETS 0 \TO n-1 \DO
+  \BEGIN
+    \IF A[i] \leq B[j] \THEN
+    \BEGIN
+       X[k]\GETS A[i] \STMTNUM{.9in}{st.1}\\
+       i\GETS i+1
+    \END
+    \ELSE
+    \BEGIN
+       X[k]\GETS B[j] \STMTNUM{.93in}{st.2}\\
+       j\GETS j+1
+    \END
+  \END
+\END
+\end{pseudocode}
+
+The counter \verb+pseudonum+ keeps track of the statement numbers.
+The style of the counter values can be changed using the method
+described in Section 6.3 of \cite{lamport}. For example,
+we used the command
+\begin{center}
+\verb+ \renewcommand{\thepseudonum}{\roman{pseudonum}} +
+\end{center}
+in our example so that statements were numbered with 
+lowercase Roman numerals.
+We also assigned a label to the algorithm using the
+\verb+\label{}+ command that is described in Section 4.2 of \cite{lamport}.
+Finally, by trial and error, we determined 
+spacing so that the statement numbers would be vertically aligned.
+
+We now give an example of how the numbered statements in the above
+algorithm can be referenced in a \LaTeX document.  The commands
+
+\begin{verbatim}
+On lines (\ref{st.1}) and (\ref{st.2}) of Algorithm 
+\ref{MergeSort}, we determine the $k$th element of the 
+sorted array.
+\end{verbatim}
+
+\noindent{}produce the following output:
+
+\medskip 
+
+\noindent{}On lines (\ref{st.1}) and (\ref{st.2}) of Algorithm \ref{MergeSort},  
+we determine the $k$th element of the 
+sorted array.
+
+%\medskip 
+
+
+
+\section{Framing}
+The \keyword{pseudocode} environment also has an optional parameter, 
+\verb+<frame>+. The complete form of the \keyword{pseudocode} environment is
+
+\begin{verbatim}
+\begin{pseudocode}[<frame>]{<Name>}{<Parameters>}
+  pseudocode constructs
+\end{pseudocode}
+\end{verbatim}
+
+The possible values of  \verb+<frame>+ are:
+\begin{center}
+\begin{tabular}{llll}
+\verb+shadowbox+ &
+\verb+doublebox+ &
+\verb+ovalbox+ &
+\verb+Ovalbox+  \\
+\verb+framebox+ &
+\verb+plain+ &
+\verb+ruled+ &
+\verb+display+
+\end{tabular}
+\end{center}
+The values ending with ``box'' draw various types of frames around the algorithm.
+The value \verb+plain+ is the default and adds no frame to the algorithm.
+The value \verb+display+ is used for displaying sections of code
+without the algorithm name or parameters. Here are some examples with
+input:
+
+\begin{verbatim}
+\begin{pseudocode}[<frame>]{SquareAndMultiply}{x,b,n}
+ \COMMENT{comment}{ Compute $x^b \pmod{n}$}\\
+ z\GETS 1\\
+ \WHILE b > 0 \DO
+ \BEGIN
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd} 
+    \THEN z \GETS z \cdot x  \pmod{n} \\
+    b \GETS \CALL{ShiftRight}{b}
+ \END\\
+ \RETURN{z}
+\end{pseudocode}
+\end{verbatim}
+
+\noindent{}where we give \verb+<frame>+  each of the values described above.
+
+\medskip
+
+\noindent When \verb+<frame>+ is \verb+shadowbox+ we obtain:
+
+\begin{pseudocode}[shadowbox]{SquareAndMultiply}{x,b,n}
+ \COMMENT{comment}{ Compute $x^b \pmod{n}$}\\
+ z\GETS 1\\
+ \WHILE b > 0 \DO
+ \BEGIN
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd} 
+    \THEN z \GETS z \cdot x  \pmod{n} \\
+    b \GETS \CALL{ShiftRight}{b}
+ \END\\
+ \RETURN{z}
+\end{pseudocode}
+
+\noindent When \verb+<frame>+ is \verb+doublebox+ we obtain:
+
+\begin{pseudocode}[doublebox]{SquareAndMultiply}{x,b,n}
+ \COMMENT{comment}{ Compute $x^b \pmod{n}$}\\
+ z\GETS 1\\
+ \WHILE b > 0 \DO
+ \BEGIN
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd} 
+    \THEN z \GETS z \cdot x  \pmod{n} \\
+    b \GETS \CALL{ShiftRight}{b}
+ \END\\
+ \RETURN{z}
+\end{pseudocode}
+
+\noindent When \verb+<frame>+ is \verb+ovalbox+ we obtain:
+
+\begin{pseudocode}[ovalbox]{SquareAndMultiply}{x,b,n}
+ \COMMENT{comment}{ Compute $x^b \pmod{n}$}\\
+ z\GETS 1\\
+ \WHILE b > 0 \DO
+ \BEGIN
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd} 
+    \THEN z \GETS z \cdot x  \pmod{n} \\
+    b \GETS \CALL{ShiftRight}{b}
+ \END\\
+ \RETURN{z}
+\end{pseudocode}
+
+\noindent When \verb+<frame>+ is \verb+Ovalbox+ we obtain:
+
+\begin{pseudocode}[Ovalbox]{SquareAndMultiply}{x,b,n}
+ \COMMENT{comment}{ Compute $x^b \pmod{n}$}\\
+ z\GETS 1\\
+ \WHILE b > 0 \DO
+ \BEGIN
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd} 
+    \THEN z \GETS z \cdot x  \pmod{n} \\
+    b \GETS \CALL{ShiftRight}{b}
+ \END\\
+ \RETURN{z}
+\end{pseudocode}
+
+\noindent When \verb+<frame>+ is \verb+framebox+ we obtain:
+
+\begin{pseudocode}[framebox]{SquareAndMultiply}{x,b,n}
+ \COMMENT{comment}{ Compute $x^b \pmod{n}$}\\
+ z\GETS 1\\
+ \WHILE b > 0 \DO
+ \BEGIN
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd} 
+    \THEN z \GETS z \cdot x  \pmod{n} \\
+    b \GETS \CALL{ShiftRight}{b}
+ \END\\
+ \RETURN{z}
+\end{pseudocode}
+
+\noindent When \verb+<frame>+ is \verb+plain+ or if \verb+[<frame>]+ is omitted we obtain:
+
+\begin{pseudocode}[plain]{SquareAndMultiply}{x,b,n}
+ \COMMENT{comment}{ Compute $x^b \pmod{n}$}\\
+ z\GETS 1\\
+ \WHILE b > 0 \DO
+ \BEGIN
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd} 
+    \THEN z \GETS z \cdot x  \pmod{n} \\
+    b \GETS \CALL{ShiftRight}{b}
+ \END\\
+ \RETURN{z}
+\end{pseudocode}
+
+\noindent When \verb+<frame>+ is \verb+ruled+ we obtain:
+
+\begin{pseudocode}[ruled]{SquareAndMultiply}{x,b,n}
+ \COMMENT{comment}{ Compute $x^b \pmod{n}$}\\
+ z\GETS 1\\
+ \WHILE b > 0 \DO
+ \BEGIN
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd} 
+    \THEN z \GETS z \cdot x  \pmod{n} \\
+    b \GETS \CALL{ShiftRight}{b}
+ \END\\
+ \RETURN{z}
+\end{pseudocode}
+
+
+The purpose of the value \verb+display+ is to allow portions of
+algorithms to be displayed with out the algorithm header. Thus
+for example to display the section of code in the $\WHILE$ loop
+of the $\CALL{SquareAndMultiply}{}$ algorithm one could write
+
+\begin{verbatim}
+\begin{center}
+\begin{minipage}{2in}
+\begin{pseudocode}[display]{}{}
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd}
+    \THEN z \GETS z \cdot x  \pmod{n}\\
+    b \GETS \CALL{ShiftRight}{b}
+\end{pseudocode}
+\end{minipage}
+\end{center}
+\end{verbatim}
+
+\noindent which would produce the following output:
+
+\begin{center}
+\begin{minipage}{2in}
+\begin{pseudocode}[display]{}{}
+  z \GETS z^2 \pmod{n} \\
+  \IF b\mbox{ is odd}
+    \THEN z \GETS z \cdot x  \pmod{n}\\
+     b \GETS \CALL{ShiftRight}{b}
+\end{pseudocode}
+\end{minipage}
+\end{center}
+
+\section{Logistics \& pragmatics}
+
+The file \keyword{funpseudocode.sty} may be freely downloaded from 
+
+\centerline{\url{http://www.cse.iitd.ac.in/~sak/funpseudocode.sty}}
+
+\noindent{}and copied into the \keyword{pseudocode} folder (alongside the older
+\keyword{pseudocode.sty} file) so that \keyword{pdflatex} can find it. In my
+Ubuntu system, I have copied it into the folder
+
+\centerline{\keyword{/usr/share/texlive/texmf-dist/tex/latex/pseudocode/}}
+\noindent{}where it sits alongside the older \keyword{pseudocode.sty} file.
+Then  you may just include 
+
+\centerline{{\tt \textbackslash usepackage\{funpseudocode\}}} 
+
+\noindent{}in the preamble of your \LaTeX\ file to invoke its commands in the
+environment {\tt pseudocode}. Do not put both {\tt \textbackslash
+  usepackage\{funpseudocode\}} and {\tt \textbackslash usepackage\{pseudocode\}}
+in your preamble.
+\begin{thebibliography}{99}
+
+\bibitem{LC}
+M.\ Goossens, F.\ Mittelbach and A.\ Samarin, {\it The \LaTeX Companion}, 
+Addison-Wesley, 1994.
+
+\bibitem{cages}
+D.L.\ Kreher and D.R.\ Stinson,
+{\em Combinatorial Algorithms: Generation, Enumeration and Search},
+CRC Press, 1999.
+
+\bibitem{lamport}
+L.\ Lamport, \LaTeX, 
+{\em A Document Preparation System},
+Addison-Wesley, 1994.
+
+\bibitem{lehrer}
+T.\ Lehrer,
+{\tt
+  \url{http://www.lyricsfreak.com/t/tom+lehrer/lobachevsky\_20138409.html}}
+20th century.
+\bibitem{lloyd}
+J.\ W.\ Lloyd,
+{\em Foundations of Logic Programming},
+Springer-Verlag, 1987.
+\bibitem{backus}
+J.\ Backus,
+{\it Can Programming Be Liberated from the von Neumann Style? A
+  Functional Style and Its Algerbra of Programs},
+CACM, 1978.
+
+\end{thebibliography}
+\end{document}
+
